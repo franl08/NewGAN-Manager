@@ -6,7 +6,7 @@ class XML_Parser:
         pass
 
     def parse_xml(self, path):
-        UID_regex = re.compile('([0-9]{7,}(?=\/))')
+        UID_regex = re.compile('([0-9]{4,}(?=\/))')
         eth_img_regex = re.compile('((?<=from=\").*(?=\" to))')
         result_data = []
         xml = open(path, 'r', encoding="UTF-8")
