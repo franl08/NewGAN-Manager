@@ -1,8 +1,8 @@
 [tool.briefcase]
 project_name = "NewGAN-Manager"
 bundle = "com.fm"
-version = "1.4.0"
-url = "https://github.com/Maradonna90/NewGAN-Manager"
+version = "1.4.1"
+url = "https://github.com/franl08/NewGAN-Manager"
 license = "GNU General Public License v3 (GPLv3)"
 author = 'Maradonna (gestalt)'
 author_email = "None"
@@ -27,8 +27,8 @@ system_requires = [
     'libgirepository1.0-dev',
     'libcairo2-dev',
     'libpango1.0-dev',
-    'libwebkitgtk-3.0-0',
-    'gir1.2-webkit-3.0',
+    'libwxgtk3.0-gtk3-dev',
+    'gir1.2-webkit2-4.0',
 ]
 
 [tool.briefcase.app.newganmanager.windows]

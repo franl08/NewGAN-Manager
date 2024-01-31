@@ -1,4 +1,3 @@
-
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
@@ -6,65 +5,64 @@ name: Windows
 
 on:
   push:
-    branches: [ master, workflow-test, app-path ]
+    branches: [master, workflow-test, app-path]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build:
-
     runs-on: windows-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
-    - name: Install dependencies
-      run: |
-        #apt-get update
-        #sudo apt-get install git python3-dev python3-pip libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit-3.0
-    - name: Beeware dependencies
-      run: |
-        # stop the build if there are Python syntax errors or undefined names d
-        # python -m pip install -r requirements.txt
-        python -m pip install beeware==0.3.0 toga==0.4.0
-        python -m pip install dhooks
-    - name: Run tests with pytest
-      run: |
-        cd src/
-        python -m unittest test_app.Test_Profile_Manager.test_swap_xml -v
-        python -m unittest test_app.Test_Profile_Manager.test_delete_profile -v
-        python -m unittest test_app.Test_Profile_Manager.test_create_profile -v
-        python -m unittest test_app.Test_Profile_Manager.test_load_profile -v
-        python -m unittest test_app.Test_Profile_Manager.test_get_ethnic -v
-        python -m unittest test_app.Test_Profile_Manager.test_switching_profiles_with_invalid_path -v
-        python -m unittest test_app.Test_Profile_Manager.test_migrate_function -v
-        python -m unittest test_app.Test_XML_Parser -v
-        python -m unittest test_app.Test_RTF_Parser -v
-        python -m unittest test_app.Test_Config_Manager -v
-        python -m unittest test_app.Test_Xml_Writing -v
-        python -m unittest test_mapper.Test_Mapper_Generate_Mapping -v
-        python -m unittest test_mapper.Test_Mapper_Preserve_Mapping -v
-        python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_simple -v
-        python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_all_cases -v
-        python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_double -v
-        python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_double_exclusive -v
-        python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_complete_subset -v
-        python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_complete_subset_reverse -v
-        python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_partial_subset -v
-        python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_partial_subset_reverse -v
-    - name: Build
-      run: |
-        briefcase create
-        briefcase build
-        briefcase package
-    - name: Save Installer
-      uses: actions/upload-artifact@v3
-      with:
-        name: NewGAN-Manager-Installer-Win-v1.4.0
-        path: |
-          views/
-          filters/
-          dist/NewGAN-Manager-1.4.0.msi
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+      - name: Install dependencies
+        run: |
+          #apt-get update
+          #sudo apt-get install git python3-dev python3-pip libgirepository1.0-dev libcairo2-dev libpango1.0-dev libwebkitgtk-3.0-0 gir1.2-webkit-3.0
+      - name: Beeware dependencies
+        run: |
+          # stop the build if there are Python syntax errors or undefined names d
+          # python -m pip install -r requirements.txt
+          python -m pip install beeware==0.3.0 toga==0.4.0
+          python -m pip install dhooks
+      - name: Run tests with pytest
+        run: |
+          cd src/
+          python -m unittest test_app.Test_Profile_Manager.test_swap_xml -v
+          python -m unittest test_app.Test_Profile_Manager.test_delete_profile -v
+          python -m unittest test_app.Test_Profile_Manager.test_create_profile -v
+          python -m unittest test_app.Test_Profile_Manager.test_load_profile -v
+          python -m unittest test_app.Test_Profile_Manager.test_get_ethnic -v
+          python -m unittest test_app.Test_Profile_Manager.test_switching_profiles_with_invalid_path -v
+          python -m unittest test_app.Test_Profile_Manager.test_migrate_function -v
+          python -m unittest test_app.Test_XML_Parser -v
+          python -m unittest test_app.Test_RTF_Parser -v
+          python -m unittest test_app.Test_Config_Manager -v
+          python -m unittest test_app.Test_Xml_Writing -v
+          python -m unittest test_mapper.Test_Mapper_Generate_Mapping -v
+          python -m unittest test_mapper.Test_Mapper_Preserve_Mapping -v
+          python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_simple -v
+          python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_all_cases -v
+          python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_double -v
+          python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_double_exclusive -v
+          python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_complete_subset -v
+          python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_complete_subset_reverse -v
+          python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_partial_subset -v
+          python -m unittest test_mapper.Test_Mapper_Overwrite_Mapping.test_overwrite_mapping_partial_subset_reverse -v
+      - name: Build
+        run: |
+          briefcase create
+          briefcase build
+          briefcase package
+      - name: Save Installer
+        uses: actions/upload-artifact@v3
+        with:
+          name: NewGAN-Manager-Installer-Win-v1.4.0
+          path: |
+            views/
+            filters/
+            dist/NewGAN-Manager-1.4.0.msi
