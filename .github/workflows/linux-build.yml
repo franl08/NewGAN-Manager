@@ -53,7 +53,7 @@ jobs:
         run: |
           briefcase create 
           briefcase build 
-          briefcase package
+          #briefcase package
       - name: Save Installer
         uses: actions/upload-artifact@v4
         with:
