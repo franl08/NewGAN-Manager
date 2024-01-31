@@ -54,6 +54,10 @@ jobs:
           briefcase create 
           briefcase build 
           #briefcase package
+      - name: Rename application
+        run: |
+          mkdir linux
+          mv build/newganmanager/ubuntu/jammy/newganmanager-1.4.1/usr/bin/newganmanager linux/NewGAN-Manager-Installer-Linux-v1.4.1-x86_64.AppImage
       - name: Save Installer
         uses: actions/upload-artifact@v4
         with:
@@ -61,4 +65,4 @@ jobs:
           path: |
             views/
             filters/
-            linux/NewGAN-Manager-1.4.1-x86_64.AppImage
+            linux/NewGAN-Manager-Installer-Linux-v1.4.1-x86_64.AppImage
