@@ -18,7 +18,9 @@ import requests
 
 class SourceSelection(toga.Selection):
     def __init__(self, id=None, style=None, items=None, on_change=None, enabled=True):
-        super().__init__(id=id, style=style, items=items, on_change=on_change, enabled=enabled)
+        super().__init__(
+            id=id, style=style, items=items, on_change=on_change, enabled=enabled
+        )
 
     def add_item(self, item):
         self._items.append(item)
@@ -42,24 +44,51 @@ class NewGANManager(toga.App):
         """
         # Logging setup
         formatter = logging.Formatter("%(asctime)s | %(name)s: %(message)s")
-        fh = logging.FileHandler(str(self.paths.app)+'/newgan.log')
+        fh = logging.FileHandler(str(self.paths.app) + "/newgan.log")
         fh.setFormatter(formatter)
-        self.logger = logging.getLogger('NewGAN App')
+        self.logger = logging.getLogger("NewGAN App")
         self.logger.setLevel(logging.DEBUG)
         fh.setLevel(logging.DEBUG)
         self.logger.addHandler(fh)
-        self.logger.info("Starting Application\n------------------------------------------------")
+        self.logger.info(
+            "Starting Application\n------------------------------------------------"
+        )
         self.logger.info(str(self.paths.app))
-        self.facepack_dirs = set(["African", "Asian", "Caucasian", "Central European", "EECA", "Italmed", "MENA", "MESA", "SAMed", "Scandinavian", "Seasian", "South American", "SpanMed", "YugoGreek"])
-        self.mode_info = {"Overwrite": "Overwrites already replaced faces",
-                          "Preserve":  "Preserves already replaced faces",
-                          "Generate": "Generates mapping from scratch."}
-        os.makedirs(str(self.paths.app)+"/.config", exist_ok=True)
-        if not os.path.isfile(str(self.paths.app)+"/.user/cfg.json"):
-            shutil.copyfile(str(self.paths.app)+"/.user/default_cfg.json", str(self.paths.app)+"/.user/cfg.json")
+        self.facepack_dirs = set(
+            [
+                "African",
+                "Asian",
+                "Caucasian",
+                "Central European",
+                "EECA",
+                "Italmed",
+                "MENA",
+                "MESA",
+                "SAMed",
+                "Scandinavian",
+                "Seasian",
+                "South American",
+                "SpanMed",
+                "YugoGreek",
+            ]
+        )
+        self.mode_info = {
+            "Overwrite": "Overwrites already replaced faces",
+            "Preserve": "Preserves already replaced faces",
+            "Generate": "Generates mapping from scratch.",
+        }
+        os.makedirs(str(self.paths.app) + "/.config", exist_ok=True)
+        if not os.path.isfile(str(self.paths.app) + "/.user/cfg.json"):
+            shutil.copyfile(
+                str(self.paths.app) + "/.user/default_cfg.json",
+                str(self.paths.app) + "/.user/cfg.json",
+            )
 
         self.logger.info("Loading current profile")
-        self.profile_manager = Profile_Manager(Config_Manager().get_latest_prf(str(self.paths.app)+"/.user/cfg.json"), str(self.paths.app))
+        self.profile_manager = Profile_Manager(
+            Config_Manager().get_latest_prf(str(self.paths.app) + "/.user/cfg.json"),
+            str(self.paths.app),
+        )
         self.profile_manager.migrate_config()
         self.logger.info("Creating GUI")
         self.main_box = toga.Box()
@@ -69,30 +98,37 @@ class NewGANManager(toga.App):
 
         # CREATE MENUBAR
         troubleshooting = toga.Command(
-            lambda e=None, u="https://github.com/Maradonna90/NewGAN-Manager/wiki/Troubleshooting": self.open_link(u),
-            text='Troubleshooting',
+            lambda e=None,
+            u="https://github.com/Maradonna90/NewGAN-Manager/wiki/Troubleshooting": self.open_link(
+                u
+            ),
+            text="Troubleshooting",
             group=toga.Group.HELP,
-            section=1
+            section=1,
         )
         usage = toga.Command(
-            lambda e=None, u="https://www.youtube.com/watch?v=iJqZNp0nomM": self.open_link(u),
-            text='User Guide',
+            lambda e=None,
+            u="https://www.youtube.com/watch?v=iJqZNp0nomM": self.open_link(u),
+            text="User Guide",
             group=toga.Group.HELP,
-            section=0
+            section=0,
         )
 
         faq = toga.Command(
-            lambda e=None, u="https://github.com/Maradonna90/NewGAN-Manager/wiki/FAQ": self.open_link(u),
-            text='FAQ',
+            lambda e=None,
+            u="https://github.com/Maradonna90/NewGAN-Manager/wiki/FAQ": self.open_link(
+                u
+            ),
+            text="FAQ",
             group=toga.Group.HELP,
-            section=2
+            section=2,
         )
 
         discord = toga.Command(
             lambda e=None, u="https://discord.gg/UfRpJVc": self.open_link(u),
-            text='Discord',
+            text="Discord",
             group=toga.Group.HELP,
-            section=3
+            section=3,
         )
 
         self.commands.add(discord, faq, troubleshooting, usage)
@@ -111,10 +147,21 @@ class NewGANManager(toga.App):
 
         prfsel_lab = toga.Label(text="Select Profile: ")
         prfsel_lab.style.update(width=label_width)
-        self.prfsel_lst = SourceSelection(items=list(self.profile_manager.config["Profile"].keys()), on_change=self._set_profile_status)
+        self.prfsel_lst = SourceSelection(
+            items=list(self.profile_manager.config["Profile"].keys()),
+            on_change=self._set_profile_status,
+        )
         self.prfsel_lst.value = self.profile_manager.cur_prf
-        prfsel_btn = toga.Button(text="Delete", on_press=lambda e=None, c=self.prfsel_lst: self._delete_profile(c))
-        prf_btn = toga.Button(text="Create", on_press=lambda e=None, d=prf_inp, c=self.prfsel_lst: self._create_profile(d, c))
+        prfsel_btn = toga.Button(
+            text="Delete",
+            on_press=lambda e=None, c=self.prfsel_lst: self._delete_profile(c),
+        )
+        prf_btn = toga.Button(
+            text="Create",
+            on_press=lambda e=None, d=prf_inp, c=self.prfsel_lst: self._create_profile(
+                d, c
+            ),
+        )
 
         self.main_box.add(prf_box)
         prf_box.add(prf_lab)
@@ -134,16 +181,24 @@ class NewGANManager(toga.App):
         dir_box = toga.Box()
         dir_lab = toga.Label(text="Select Image Directory: ")
         dir_lab.style.update(width=label_width)
-        self.dir_inp = toga.TextInput(readonly=True, value=self.profile_manager.prf_cfg['img_dir'])
+        self.dir_inp = toga.TextInput(
+            readonly=True, value=self.profile_manager.prf_cfg["img_dir"]
+        )
         self.dir_inp.style.update(direction=ROW, padding=(0, 20), flex=1)
-        self.dir_btn = toga.Button(text="...", on_press=self.action_select_folder_dialog, enabled=False)
+        self.dir_btn = toga.Button(
+            text="...", on_press=self.action_select_folder_dialog, enabled=False
+        )
 
         rtf_box = toga.Box()
         rtf_lab = toga.Label(text="RTF File: ")
         rtf_lab.style.update(width=label_width)
-        self.rtf_inp = toga.TextInput(readonly=True, value=self.profile_manager.prf_cfg['rtf'])
+        self.rtf_inp = toga.TextInput(
+            readonly=True, value=self.profile_manager.prf_cfg["rtf"]
+        )
         self.rtf_inp.style.update(direction=ROW, padding=(0, 20), flex=1)
-        self.rtf_btn = toga.Button(text="...", on_press=self.action_open_file_dialog, enabled=False)
+        self.rtf_btn = toga.Button(
+            text="...", on_press=self.action_open_file_dialog, enabled=False
+        )
 
         self.main_box.add(dir_box)
         self.main_box.add(rtf_box)
@@ -161,22 +216,30 @@ class NewGANManager(toga.App):
         self.genmde_lab.style.update(width=label_width)
         self.genmdeinfo_lab = toga.Label(text=self.mode_info["Generate"])
         self.gendup = toga.Switch(text="Allow Duplicates?", value=True)
-        self.genmde_lst = SourceSelection(items=list(self.mode_info.keys()), on_change=self.update_label)
+        self.gen_with_r_prefix = toga.Switch(
+            text="Append r- prefix? (needed for FM24)", value=True
+        )
+        self.genmde_lst = SourceSelection(
+            items=list(self.mode_info.keys()), on_change=self.update_label
+        )
         self.genmde_lst.value = "Generate"
         self.genmde_lst.style.update(direction=ROW, padding=(0, 20), flex=1)
         self.genmde_lab.style.update(padding_top=7)
         self.genmdeinfo_lab.style.update(padding_top=7)
         self.gendup.style.update(padding_top=7, padding_left=20)
-
+        self.gen_with_r_prefix.style.update(padding_top=7, padding_left=20)
 
         gen_mode_box.add(self.genmde_lab)
         gen_mode_box.add(self.genmde_lst)
         gen_mode_box.add(self.genmdeinfo_lab)
         gen_mode_box.add(self.gendup)
+        gen_mode_box.add(self.gen_with_r_prefix)
         self.main_box.add(gen_mode_box)
         # BOTTOM Generation
         gen_box = toga.Box()
-        self.gen_btn = toga.Button(text="Replace Faces", on_press=self._replace_faces, enabled=False)
+        self.gen_btn = toga.Button(
+            text="Replace Faces", on_press=self._replace_faces, enabled=False
+        )
         self.gen_btn.style.update(padding_bottom=20)
         self.gen_lab = toga.Label(text="")
 
@@ -187,7 +250,9 @@ class NewGANManager(toga.App):
         gen_box.add(self.gen_prg)
         self.main_box.add(gen_box)
         self.gen_prg.style.update(width=570, alignment="center")
-        self.gen_lab.style.update(padding_top=20, padding_bottom=20, width=100, alignment="center")
+        self.gen_lab.style.update(
+            padding_top=20, padding_bottom=20, width=100, alignment="center"
+        )
 
         # Report bad image
         rep_box = toga.Box()
@@ -197,7 +262,9 @@ class NewGANManager(toga.App):
         self.rep_img = toga.ImageView(toga.Image("resources/logo.png"))
         self.rep_img.style.update(height=180)
         self.rep_img.style.update(width=180)
-        self.rep_btn = toga.Button(text="Report", on_press=self.send_report, enabled=False)
+        self.rep_btn = toga.Button(
+            text="Report", on_press=self.send_report, enabled=False
+        )
 
         rep_box.add(self.rep_lab)
         rep_box.add(self.rep_inp)
@@ -214,8 +281,8 @@ class NewGANManager(toga.App):
         rtf_box.style.update(padding_bottom=20)
         gen_mode_box.style.update(padding_bottom=20)
         rep_box.style.update(padding_top=20)
-        gen_box.style.update(direction=COLUMN, alignment='center')
-        self.main_box.style.update(direction=COLUMN, padding=30, alignment='center')
+        gen_box.style.update(direction=COLUMN, alignment="center")
+        self.main_box.style.update(direction=COLUMN, padding=30, alignment="center")
 
         self.main_window = toga.MainWindow(title=self.formal_name, size=(1000, 600))
         self.main_window.content = self.main_box
@@ -255,7 +322,9 @@ class NewGANManager(toga.App):
             self.profile_manager.load_profile(name)
             self._refresh_inp()
             self.set_btns(True)
-            Config_Manager().save_config(str(self.paths.app)+"/.user/cfg.json", self.profile_manager.config)
+            Config_Manager().save_config(
+                str(self.paths.app) + "/.user/cfg.json", self.profile_manager.config
+            )
 
     def _refresh_inp(self, clear=False):
         self.logger.info("Refresh Input Buttons")
@@ -263,8 +332,8 @@ class NewGANManager(toga.App):
             self.dir_inp.value = None
             self.rtf_inp.value = None
         else:
-            self.dir_inp.value = self.profile_manager.prf_cfg['img_dir']
-            self.rtf_inp.value = self.profile_manager.prf_cfg['rtf']
+            self.dir_inp.value = self.profile_manager.prf_cfg["img_dir"]
+            self.rtf_inp.value = self.profile_manager.prf_cfg["rtf"]
 
     def _create_profile(self, ent, c):
         name = ent.value
@@ -281,7 +350,7 @@ class NewGANManager(toga.App):
 
     async def _throw_error(self, msg):
         self.logger.info("Error window {}:".format(msg))
-        await self.main_window.error_dialog('Error', msg)
+        await self.main_window.error_dialog("Error", msg)
 
     async def _show_info(self, msg):
         self.logger.info("Info window: {}".format(msg))
@@ -295,9 +364,15 @@ class NewGANManager(toga.App):
             )
             path_name = str(path_name)
             self.logger.info(path_name)
-            self.dir_inp.value = path_name+"/"
-            self.profile_manager.prf_cfg['img_dir'] = path_name+"/"
-            Config_Manager().save_config(str(self.paths.app)+"/.user/"+self.profile_manager.cur_prf+".json", self.profile_manager.prf_cfg)
+            self.dir_inp.value = path_name + "/"
+            self.profile_manager.prf_cfg["img_dir"] = path_name + "/"
+            Config_Manager().save_config(
+                str(self.paths.app)
+                + "/.user/"
+                + self.profile_manager.cur_prf
+                + ".json",
+                self.profile_manager.prf_cfg,
+            )
 
         except Exception:
             self.logger.error("Fatal error in main loop", exc_info=True)
@@ -307,21 +382,31 @@ class NewGANManager(toga.App):
         self.logger.info("Select File...")
         try:
             fname = await self.main_window.open_file_dialog(
-                title="Open RTF file",
-                multiple_select=False,
-                file_types=['rtf']
+                title="Open RTF file", multiple_select=False, file_types=["rtf"]
             )
             self.logger.info("Created file-dialog")
             if fname is not None:
                 fname = str(fname)
                 self.rtf_inp.value = fname
-                self.profile_manager.prf_cfg['rtf'] = fname
+                self.profile_manager.prf_cfg["rtf"] = fname
                 self.logger.info("RTF file: " + fname)
-                Config_Manager().save_config(str(self.paths.app)+"/.user/"+self.profile_manager.cur_prf+".json", self.profile_manager.prf_cfg)
+                Config_Manager().save_config(
+                    str(self.paths.app)
+                    + "/.user/"
+                    + self.profile_manager.cur_prf
+                    + ".json",
+                    self.profile_manager.prf_cfg,
+                )
             else:
-                self.profile_manager.prf_cfg['rtf'] = ""
+                self.profile_manager.prf_cfg["rtf"] = ""
                 self.rtf_inp.value = ""
-                Config_Manager().save_config(str(self.paths.app)+"/.user/"+self.profile_manager.cur_prf+".json", self.profile_manager.prf_cfg)
+                Config_Manager().save_config(
+                    str(self.paths.app)
+                    + "/.user/"
+                    + self.profile_manager.cur_prf
+                    + ".json",
+                    self.profile_manager.prf_cfg,
+                )
         except Exception:
             self.logger.error("Fatal error in main loop", exc_info=True)
             pass
@@ -329,19 +414,19 @@ class NewGANManager(toga.App):
     def _replace_faces(self, widget):
         self.logger.info("Start Replace Faces")
         # get values from UI elements
-        rtf = self.profile_manager.prf_cfg['rtf']
-        img_dir = self.profile_manager.prf_cfg['img_dir']
+        rtf = self.profile_manager.prf_cfg["rtf"]
+        img_dir = self.profile_manager.prf_cfg["img_dir"]
         profile = self.profile_manager.cur_prf
         mode = self.genmde_lst.value
         if not os.path.isfile(rtf):
             self._throw_error("The RTF file doesn't exist!")
             self.gen_prg.stop()
-            self.profile_manager.prf_cfg['rtf'] = ''
+            self.profile_manager.prf_cfg["rtf"] = ""
             return
         if not os.path.isdir(img_dir):
             self._throw_error("The image directory doesn't exist!")
             self.gen_prg.stop()
-            self.profile_manager.prf_cfg['img_dir'] = ''
+            self.profile_manager.prf_cfg["img_dir"] = ""
             return
         # Check if valid image_directory contains all the needed subfolders
         img_dirs = set()
@@ -350,7 +435,9 @@ class NewGANManager(toga.App):
                 img_dirs.add(entry.name)
         for fp_dir in self.facepack_dirs:
             if fp_dir not in img_dirs:
-                self._throw_error("Folder {} is missing in the image directory".format(fp_dir))
+                self._throw_error(
+                    "Folder {} is missing in the image directory".format(fp_dir)
+                )
                 self.gen_prg.stop()
                 return
         self.logger.info("rtf: {}".format(rtf))
@@ -359,7 +446,7 @@ class NewGANManager(toga.App):
         self.logger.info("mode: {}".format(mode))
         self.set_btns(False)
         self.gen_prg.start()
-        self.gen_lab.text =  "Parsing RTF"
+        self.gen_lab.text = "Parsing RTF"
         yield 0.1
         rtf_parser = RTF_Parser()
         if not rtf_parser.is_rtf_valid(rtf):
@@ -370,16 +457,21 @@ class NewGANManager(toga.App):
         self.gen_prg.value += 20
         self.gen_lab.text = "Map player to ethnicity"
         yield 0.1
-        mapping_data = Mapper(img_dir, self.profile_manager).generate_mapping(rtf_data, mode, self.gendup.value)
+        mapping_data = Mapper(img_dir, self.profile_manager).generate_mapping(
+            rtf_data, mode, self.gendup.value
+        )
         self.gen_prg.value += 60
         self.gen_lab.text = "Generate config.xml"
         yield 0.1
-        self.profile_manager.write_xml(mapping_data)
+        self.profile_manager.write_xml(mapping_data, self.gen_with_r_prefix.value)
         # save profile metadata (used pics and config.xml)
         self.gen_lab.text = "Save metadata for profile"
         self.gen_prg.value += 10
         yield 0.1
-        Config_Manager().save_config(str(self.paths.app)+"/.user/"+profile+".json", self.profile_manager.prf_cfg)
+        Config_Manager().save_config(
+            str(self.paths.app) + "/.user/" + profile + ".json",
+            self.profile_manager.prf_cfg,
+        )
         self.gen_prg.value += 10
         yield 0.1
         self.gen_lab.text = "Finished! :)"
@@ -387,7 +479,7 @@ class NewGANManager(toga.App):
         # self._show_info("Finished! :)")
         self.gen_prg.stop()
         self.gen_prg.value = 0
-        self.gen_lab.text = ''
+        self.gen_lab.text = ""
         self.set_btns(True)
         yield 0.1
 
@@ -396,8 +488,10 @@ class NewGANManager(toga.App):
         uid = id.value
         if len(uid) >= 7:
             try:
-                img_path = XML_Parser().get_imgpath_from_uid(self.profile_manager.prf_cfg['img_dir']+"config.xml", uid)
-                img_path = self.profile_manager.prf_cfg['img_dir']+img_path+".png"
+                img_path = XML_Parser().get_imgpath_from_uid(
+                    self.profile_manager.prf_cfg["img_dir"] + "config.xml", uid
+                )
+                img_path = self.profile_manager.prf_cfg["img_dir"] + img_path + ".png"
                 self.rep_img.image = toga.Image(img_path)
                 self.logger.info("change image preview to: {}".format(img_path))
             except Exception as e:
@@ -409,7 +503,9 @@ class NewGANManager(toga.App):
     def send_report(self, e):
         uid = self.rep_inp.value
         if len(uid) >= 7:
-            rep = Reporter(self.hook, self.profile_manager.prf_cfg['img_dir']+"config.xml")
+            rep = Reporter(
+                self.hook, self.profile_manager.prf_cfg["img_dir"] + "config.xml"
+            )
             res = rep.send_report(uid)
             if res:
                 self._show_info("Thanks for Reporting!")
@@ -422,13 +518,18 @@ class NewGANManager(toga.App):
 
     def check_for_update(self):
         try:
-            r = requests.get("https://raw.githubusercontent.com/Maradonna90/NewGAN-Manager/master/version", timeout=1)
+            r = requests.get(
+                "https://raw.githubusercontent.com/Maradonna90/NewGAN-Manager/master/version",
+                timeout=1,
+            )
         except:
             self.logger.info("check update timeout exceeded!")
             return
         if r.text.strip() != self.version:
             self._show_info("There is a new version. Please Update!")
-            self.open_link("https://github.com/Maradonna90/NewGAN-Manager/releases/latest")
+            self.open_link(
+                "https://github.com/Maradonna90/NewGAN-Manager/releases/latest"
+            )
 
 
 def main():
