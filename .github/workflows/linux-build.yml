@@ -57,8 +57,8 @@ jobs:
       - name: Save Installer
         uses: actions/upload-artifact@v4
         with:
-          name: NewGAN-Manager-Installer-Linux-v1.4.0
+          name: NewGAN-Manager-Installer-Linux-v1.4.1
           path: |
             views/
             filters/
-            linux/NewGAN-Manager-1.4.0-x86_64.AppImage
+            linux/NewGAN-Manager-1.4.1-x86_64.AppImage
